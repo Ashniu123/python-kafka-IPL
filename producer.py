@@ -2,6 +2,7 @@ import tweepy
 from kafka import KafkaProducer
 from kafka.errors import KafkaError
 from threading import Timer
+from wordcloud import WordCloud
 
 TWITTER_CONSUMER_KEY = 'Ep01jtgTs4RsE7ReF31KPw55k'
 TWITTER_CONSUMER_SECRET = 'LOPzfNaefiGmVBXZlk6VA8KvsNEAhbkk6Z6aUCwrXPzCWfZU9U'
@@ -10,7 +11,8 @@ TWITTER_TOKEN_SECRET = 'Q154rynXIYv9apz0u64YxRtyc3BhweV3CCCtiwMcZBGQT'
 
 class IplStreamListener(tweepy.StreamListener):
 	def __init__(self):
-		self.kafka_producer = KafkaProducer(retries=5)
+		
+		self.kafka_producer = KafkaProducer(retries=5,api_version=(1,1,0))
 		self.flush_buffer()
 		super().__init__()
 
@@ -18,6 +20,7 @@ class IplStreamListener(tweepy.StreamListener):
 		print(status.text)
 		self.kafka_producer.send('ipl-topic', status.text.encode()).add_callback(self.on_send_success).add_errback(self.on_send_error)
 		
+
 	
 	def on_error(self, status_code):
 		if status_code == 420:
@@ -50,7 +53,7 @@ class Producer:
 		iplStreamListener = IplStreamListener()
 		self.iplStream = tweepy.Stream(auth=self.api.auth, listener=iplStreamListener)
 		print('Realtime Feed started!')
-		self.iplStream.filter(track=['#RCBvsKXIP'], async=True)	
+		self.iplStream.filter(track=['#CWG2018'], async=True)	
 
 if __name__ == '__main__':
 	Producer()
