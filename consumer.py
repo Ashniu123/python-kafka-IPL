@@ -3,6 +3,9 @@ from threading import Thread
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import matplotlib.animation as anim
+from PIL import Image
+import numpy as np
+from os import path
 
 class Consumer:
 	def __init__(self):
@@ -63,9 +66,12 @@ def generate_wordcloud(fig):
 		"yourselves","https","co","RT"])
 
 		text = open('tweets.txt', encoding='utf-8').read()
+		d = path.dirname(__file__)
+		logomask = np.array(Image.open(path.join(d, "ball8.png")))	
+		
 		# lower max_font_size
-		wordcloud = WordCloud(stopwords=stopWords, max_font_size=40).generate(text)
-		plt.clf()
+		wordcloud = WordCloud(stopwords=stopWords,mask = logomask,background_color='white',max_font_size=1000).generate(text)
+		#plt.clf()
 		plt.imshow(wordcloud, interpolation="bilinear")
 
 
