@@ -3,6 +3,7 @@ from kafka import KafkaProducer
 from kafka.errors import KafkaError
 from threading import Timer
 from wordcloud import WordCloud
+import sys
 
 TWITTER_CONSUMER_KEY = 'Ep01jtgTs4RsE7ReF31KPw55k'
 TWITTER_CONSUMER_SECRET = 'LOPzfNaefiGmVBXZlk6VA8KvsNEAhbkk6Z6aUCwrXPzCWfZU9U'
@@ -53,7 +54,14 @@ class Producer:
 		iplStreamListener = IplStreamListener()
 		self.iplStream = tweepy.Stream(auth=self.api.auth, listener=iplStreamListener)
 		print('Realtime Feed started!')
-		self.iplStream.filter(track=['#CWG2018'], async=True)	
+		# search topic has to be specified thorough cli args
+		self.iplStream.filter(track=sys.argv[1:], async=True)
 
 if __name__ == '__main__':
+	if len(sys.argv[1:]) == 0:
+		print('Please specify topic(s)\n\n \
+			USAGE:\n \
+			python producer.py topic1 topic2 ...\n \
+			Exiting')
+		sys.exit(1)
 	Producer()

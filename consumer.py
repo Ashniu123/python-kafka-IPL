@@ -1,7 +1,8 @@
 from kafka import KafkaConsumer
 from threading import Thread
-import sched, time
 from wordcloud import WordCloud
+import matplotlib.pyplot as plt
+import matplotlib.animation as anim
 
 class Consumer:
 	def __init__(self):
@@ -9,15 +10,15 @@ class Consumer:
 		kafka_consumer = KafkaConsumer('ipl-topic', group_id='ipl-group')
 		for message in kafka_consumer:
 			decoded_message = message.value.decode('utf-8')
-			with open("tweets.txt", "a",encoding='utf-8') as text_file:
+			with open('tweets.txt', 'a', encoding='utf-8') as text_file:
     				print(decoded_message, file=text_file)
 			# decoded_key = message.key.decode('utf-8')
 			print('TOPIC: {}\nPARTITION: {}\nOFFSET: {}\nMESSAGE: {}\n\n\n' \
 			.format(message.topic, message.partition, message.offset, decoded_message))
 
 
-def do_something(sc): 
-	
+# def generate_wordcloud(wordcloud_scheduler, fig): 
+def generate_wordcloud(fig):	
 		stopWords = frozenset([
 		"a", "about", "above", "across", "after", "afterwards", "again", "against",
 		"all", "almost", "alone", "along", "already", "also", "although", "always",
@@ -61,23 +62,11 @@ def do_something(sc):
 		"within", "without", "would", "yet", "you", "your", "yours", "yourself",
 		"yourselves","https","co","RT"])
 
-		# for w in list(word_dic):
-		#     if w in stopWords:
-		#         word_dic.pop(w,None)
-
-		# print(len(word_dic))
-
-
-		text = open('tweets.txt',encoding='utf-8').read()
-
-		import matplotlib.pyplot as plt
+		text = open('tweets.txt', encoding='utf-8').read()
 		# lower max_font_size
-		wordcloud = WordCloud(stopwords=stopWords,max_font_size=40).generate(text)
-		plt.figure()
+		wordcloud = WordCloud(stopwords=stopWords, max_font_size=40).generate(text)
+		plt.clf()
 		plt.imshow(wordcloud, interpolation="bilinear")
-		plt.axis("off")
-		plt.show()
-		s.enter(5, 1, do_something, (sc,)) #5ms
 
 
 if __name__ == '__main__':
@@ -85,7 +74,8 @@ if __name__ == '__main__':
 	consumer_thread2 = Thread(target=Consumer)
 	consumer_thread1.start()
 	consumer_thread2.start()
-	
-	s = sched.scheduler(time.time, time.sleep)
-	s.enter(5, 1, do_something, (s,)) # 5ms
-	s.run()
+
+	fig = plt.figure()
+	plt.axis('off')
+	wordcloud_animation = anim.FuncAnimation(fig, generate_wordcloud, interval=5000)
+	plt.show()
