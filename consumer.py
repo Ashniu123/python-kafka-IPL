@@ -66,11 +66,12 @@ def generate_wordcloud(fig):
 		"yourselves","https","co","RT"])
 
 		text = open('tweets.txt', encoding='utf-8').read()
-		d = path.dirname(__file__)
-		logomask = np.array(Image.open(path.join(d, "ball8.png")))	
+		image_file = path.dirname(__file__)
+		logomask = np.array(Image.open(path.join(image_file, 'twitter.jpg')))	
 		
 		# lower max_font_size
-		wordcloud = WordCloud(stopwords=stopWords,mask = logomask,background_color='white',max_font_size=1000).generate(text)
+		wordcloud = WordCloud(stopwords=stopWords,mask = logomask, \
+			background_color='white', max_font_size=1000).generate(text)
 		#plt.clf()
 		plt.imshow(wordcloud, interpolation="bilinear")
 
