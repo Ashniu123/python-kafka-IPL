@@ -13,8 +13,12 @@ class Consumer:
 		kafka_consumer = KafkaConsumer('ipl-topic', group_id='ipl-group')
 		for message in kafka_consumer:
 			decoded_message = message.value.decode('utf-8')
-			with open('tweets.txt', 'a', encoding='utf-8') as text_file:
-    				print(decoded_message, file=text_file)
+			if path.isfile('./tweets.txt'): # if file exists
+				with open('tweets.txt', 'a', encoding='utf-8') as text_file:
+						print(decoded_message, file=text_file)
+			else: # if file does not exists
+				with open('tweets.txt', 'w', encoding='utf-8') as text_file:
+						print(decoded_message, file=text_file)
 			# decoded_key = message.key.decode('utf-8')
 			print('TOPIC: {}\nPARTITION: {}\nOFFSET: {}\nMESSAGE: {}\n\n\n' \
 			.format(message.topic, message.partition, message.offset, decoded_message))
